@@ -16,7 +16,6 @@ async def main(request: Request):
         {"request": request}
     )
 
-
 @app.get("/sign-up", response_class=HTMLResponse)
 async def registration(request: Request):
     return templates.TemplateResponse(
