@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация - Discord Style Messenger{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-discord-darkest via-discord-darker to-discord-dark p-4">
+    <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-white mb-2">Создать аккаунт</h1>
+            <p class="text-gray-400">Присоединяйтесь к нашему сообществу</p>
+        </div>
+
+        <div class="bg-discord-darker rounded-lg shadow-2xl p-8 border border-gray-700/50">
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+                        Имя пользователя <span class="text-red-400">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
+                        placeholder="Введите имя пользователя"
+                    >
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+                        Email <span class="text-red-400">*</span>
+                    </label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="gmail"
+                        required
+                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
+                        placeholder="example@email.com"
+                    >
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                        Пароль <span class="text-red-400">*</span>
+                    </label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
+                        placeholder="Введите пароль"
+                    >
+                </div>
+
+                <div>
+                    <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-2">
+                        Подтвердите пароль <span class="text-red-400">*</span>
+                    </label>
+                    <input
+                        type="password"
+                        id="confirm-password"
+                        name="confirm-password"
+                        required
+                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
+                        placeholder="Повторите пароль"
+                    >
+                </div>
+
+                <div class="flex items-start space-x-3 pt-2">
+                    <input
+                        type="checkbox"
+                        id="terms"
+                        name="terms"
+                        required
+                        class="w-4 h-4 mt-1 text-discord-blue bg-discord-darkest border-gray-600 rounded focus:ring-discord-blue focus:ring-2"
+                    >
+                    <label for="terms" class="text-sm text-gray-300 leading-relaxed">
+                        Я согласен с <a href="#" class="text-discord-blue hover:underline">Условиями использования</a>
+                        и <a href="#" class="text-discord-blue hover:underline">Политикой конфиденциальности</a>
+                    </label>
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-discord-blue hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:ring-offset-2 focus:ring-offset-discord-darker mt-6"
+                >
+                    Создать аккаунт
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-gray-400 text-sm">
+                    Уже есть аккаунт?
+                    <a href="#" class="text-discord-blue hover:underline font-medium">Войти</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-6">
+            <p class="text-gray-500 text-xs">
+                Нужна помощь? <a href="#" class="text-discord-blue hover:underline">Свяжитесь с поддержкой ( её нет))))) )</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

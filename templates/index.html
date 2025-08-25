@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Discord Style Messenger - Главная{% endblock %}
+
+{% block content %}
+<div class="flex h-screen">
+    <!-- Улучшенная боковая панель с более Discord-подобным дизайном -->
+    <div class="w-72 bg-discord-darker flex flex-col shadow-xl">
+        <!-- Header -->
+        <div class="p-4 border-b border-gray-600/50 bg-discord-darkest/50">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-xl ml-8 font-bold text-white">Личные сообщения</h1>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-2">
+
+            <div class="mb-4 px-2">
+                <div class="relative">
+                    <input type="text" placeholder="Поиск человека"
+                           class="w-full bg-discord-darkest text-sm rounded-md px-3 py-2 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue">
+                    <svg class="absolute right-3 top-2.5 w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <div class="flex items-center p-3 rounded-lg hover:bg-discord-dark/60 cursor-pointer transition-all duration-200 group">
+                    <div class="relative">
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-white font-semibold text-sm">pfp</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium text-gray-200 group-hover:text-white transition-colors">name</span>
+                            <span class="text-xs text-gray-500">time</span>
+                        </div>
+                        <p class="text-sm text-gray-400 truncate group-hover:text-gray-300 transition-colors">last message</p>
+                    </div>
+                    <div class="w-2 h-2 bg-discord-blue rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="p-3 border-t border-gray-600/50 bg-discord-darkest/30">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-10 h-10 bg-gradient-to-br from-discord-blue to-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-semibold text-sm">ur pfp</span>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-discord-green border-2 border-discord-darkest rounded-full"></div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-white font-medium text-sm block">ur name</span>
+                        <p class="text-xs text-gray-400">ur username</p>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="p-2 hover:bg-discord-dark rounded-md transition-colors">
+                        <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <a href="/sign-up" class="p-2 hover:bg-discord-dark rounded-md transition-colors">
+                        <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col bg-discord-dark">
+        <div class="p-4 border-b border-gray-600/50 flex items-center justify-between bg-discord-dark shadow-sm">
+            <div class="flex items-center space-x-3">
+                <div class="relative">
+                    <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold text-xs">pfp</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-discord-green border-2 border-discord-dark rounded-full"></div>
+                </div>
+                <div>
+                    <h2 class="font-semibold text-white">name</h2>
+                    <p class="text-xs text-discord-green">status</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
+                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                    </svg>
+                </button>
+                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
+                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M1 8.25a1.25 1.25 0 112.5 0v7.5a1.25 1.25 0 11-2.5 0v-7.5zM11 3a3 3 0 00-3 3v4a3 3 0 006 0V6a3 3 0 00-3-3zM15.25 6.75a1.25 1.25 0 112.5 0 7 7 0 01-14 0 1.25 1.25 0 112.5 0 4.5 4.5 0 009 0z"></path>
+                    </svg>
+                </button>
+                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
+                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+            <div class="flex items-start space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-white font-semibold text-sm">pfp</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="font-semibold text-white">name</span>
+                        <span class="text-xs text-gray-500">time</span>
+                    </div>
+                    <p class="text-gray-200">message</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-gray-600/50 bg-discord-dark">
+            <div class="flex items-center space-x-3">
+                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors"></button>
+                <div class="flex-1 relative">
+                    <input type="text" placeholder="send message 'name'" class="w-full bg-discord-darker rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-discord-blue transition-all">
+                </div>
+                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
+                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zM9 9a1 1 0 011-1 1 1 0 11-1 1zm4-1a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+                <button class="bg-discord-blue hover:bg-blue-600 rounded-lg px-4 py-2 font-medium transition-colors text-white">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Discord Style Messenger{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'discord-dark': '#36393f',
+                        'discord-darker': '#2f3136',
+                        'discord-darkest': '#202225',
+                        'discord-blue': '#5865f2',
+                        'discord-green': '#3ba55d',
+                        'discord-blurple': '#5865f2'
+                    }
+                }
+            }
+        }
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-discord-darkest text-white font-sans antialiased">
+    {% block content %}{% endblock %}
+</body>
+</html>
