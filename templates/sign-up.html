@@ -4,68 +4,43 @@
 
 {% block content %}
 
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-discord-darkest via-discord-darker to-discord-dark p-4">
-    <div class="w-full max-w-md">
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-white mb-2">Создать аккаунт</h1>
-            <p class="text-gray-400">Присоединяйтесь к нашему сообществу</p>
+<div class="min-h-screen flex items-center justify-center bg-discord-darkest">
+    <div class="max-w-md w-full space-y-8 p-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-bold text-white mb-2">Привет!</h2>
+            <p class="text-gray-400">Создай свой аккаунт в Fastcord'е</p>
         </div>
 
-        <div class="bg-discord-darker rounded-lg shadow-2xl p-8 border border-gray-700/50">
-            <form method="POST" class="space-y-4">
+            {% if error %}
+            <div class="mb-4 p-3 bg-red-600/20 border border-red-500/50 rounded-md">
+                <p class="text-red-400 text-sm">{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/sign-up" class="space-y-4">
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
-                        Имя пользователя <span class="text-red-400">*</span>
+                        ЛОГИН <span class="text-red-400">*</span>
                     </label>
                     <input
                         type="text"
                         id="username"
                         name="username"
                         required
-                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
-                        placeholder="Введите имя пользователя"
-                    >
-                </div>
-
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
-                        Email <span class="text-red-400">*</span>
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="gmail"
-                        required
-                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
-                        placeholder="example@email.com"
+                        class="w-full px-3 py-3 bg-discord-darker border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent"
                     >
                 </div>
 
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
-                        Пароль <span class="text-red-400">*</span>
+                        ПАРОЛЬ <span class="text-red-400">*</span>
                     </label>
                     <input
                         type="password"
                         id="password"
                         name="password"
                         required
-                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
-                        placeholder="Введите пароль"
-                    >
-                </div>
-
-                <div>
-                    <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-2">
-                        Подтвердите пароль <span class="text-red-400">*</span>
-                    </label>
-                    <input
-                        type="password"
-                        id="confirm-password"
-                        name="confirm-password"
-                        required
-                        class="w-full bg-discord-darkest border border-gray-600 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent transition-all"
-                        placeholder="Повторите пароль"
+                        class="w-full px-3 py-3 bg-discord-darker border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-discord-blue focus:border-transparent"
                     >
                 </div>
 
@@ -94,16 +69,11 @@
             <div class="mt-6 text-center">
                 <p class="text-gray-400 text-sm">
                     Уже есть аккаунт?
-                    <a href="#" class="text-discord-blue hover:underline font-medium">Войти</a>
+                    <a href="/" class="text-discord-blue hover:underline font-medium">Войти</a>
                 </p>
             </div>
         </div>
 
-        <div class="text-center mt-6">
-            <p class="text-gray-500 text-xs">
-                Нужна помощь? <a href="#" class="text-discord-blue hover:underline">Свяжитесь с поддержкой ( её нет))))) )</a>
-            </p>
-        </div>
     </div>
 </div>
 {% endblock %}
