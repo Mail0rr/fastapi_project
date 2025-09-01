@@ -28,8 +28,11 @@ async def lifespan(app: FastAPI):
     async with aiosqlite.connect(SQLITE_DB_NAME) as db:
         await db.execute("""CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                login TEXT NOT NULL,
-                password TEXT NOT NULL
+                username TEXT NOT NULL UNIQUE,
+                email TEXT NOT NULL,
+                password TEXT NOT NULL,
+                nickname TEXT NOT NULL,
+                pfp TEXT
             );
         """)
         await db.commit()
@@ -91,12 +94,13 @@ async def get_current_user(request: Request):
 
 
 class UserCreate(BaseModel):
-    login: str
+    username: str
+    email: str
     password: str
 
 
 class UserShow(BaseModel):
-    login: str
+    username: str
 
 
 class Token(BaseModel):
@@ -108,7 +112,7 @@ class Token(BaseModel):
 async def home(request: Request):
     username = await get_current_user(request)
     if not username:
-        return RedirectResponse(url="/login", status_code=303)
+        return RedirectResponse(url="/sign-in", status_code=303)
 
     return templates.TemplateResponse("index.html", {
         "request": request,
@@ -116,12 +120,12 @@ async def home(request: Request):
     })
 
 
-@app.get("/login", response_class=HTMLResponse)
+@app.get("/sign-in", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("sign-in.html", {"request": request})
 
 
-@app.post("/login", response_class=HTMLResponse)
+@app.post("/sign-in", response_class=HTMLResponse)
 async def login_form(
         request: Request,
         username: str = Form(...),
@@ -130,12 +134,12 @@ async def login_form(
 ):
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute("SELECT * FROM users WHERE login = ?;", (username,))
+            await cursor.execute("SELECT * FROM users WHERE username = ?;", (username,))
             db_user = await cursor.fetchone()
 
             if db_user is None or db_user["password"] != password:
                 return templates.TemplateResponse(
-                    "login.html",
+                    "sign-in.html",
                     {"request": request, "error": "Неверный логин или пароль"}
                 )
 
@@ -151,14 +155,14 @@ async def login_form(
 
     except Exception as e:
         return templates.TemplateResponse(
-            "login.html",
+            "sign-in.html",
             {"request": request, "error": "Произошла ошибка при входе"}
         )
 
 
 @app.get("/logout")
 async def logout():
-    response = RedirectResponse(url="/login", status_code=303)
+    response = RedirectResponse(url="/sign-in", status_code=303)
     response.delete_cookie("access_token")
     return response
 
@@ -172,12 +176,13 @@ async def sign_up_page(request: Request):
 async def sign_up_form(
         request: Request,
         username: str = Form(...),
+        email: str = Form(...),
         password: str = Form(...),
         connection: aiosqlite.Connection = Depends(get_db)
 ):
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute("SELECT 1 FROM users WHERE login = ?;", (username,))
+            await cursor.execute("SELECT 1 FROM users WHERE username = ?;", (username,))
             db_user = await cursor.fetchone()
 
             if db_user is not None:
@@ -187,12 +192,12 @@ async def sign_up_form(
                 )
 
             await cursor.execute(
-                "INSERT INTO users (login, password) VALUES (?, ?);",
-                (username, password)
+                "INSERT INTO users (username, email, password, nickname) VALUES (?, ?, ?, ?);",
+                (username, email, password, username)
             )
             await connection.commit()
 
-        return RedirectResponse(url="/login", status_code=303)
+        return RedirectResponse(url="/sign-in", status_code=303)
 
     except Exception as e:
         return templates.TemplateResponse(
@@ -211,21 +216,21 @@ async def sign_up_form(
 )
 async def user_registration(user_data: UserCreate, connection: aiosqlite.Connection = Depends(get_db)) -> UserShow:
     async with connection.cursor() as cursor:
-        await cursor.execute("SELECT 1 FROM users WHERE login = ?;", (user_data.login,))
+        await cursor.execute("SELECT 1 FROM users WHERE username = ?;", (user_data.username,))
         db_user = await cursor.fetchone()
 
         if db_user is not None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "User exists.")
 
         await cursor.execute(
-            "INSERT INTO users (login, password) VALUES (?, ?) RETURNING id;",
-            (user_data.login, user_data.password),
+            "INSERT INTO users (username, email, password, nickname) VALUES (?, ?, ?, ?) RETURNING id;",
+            (user_data.username, user_data.email, user_data.password, user_data.username),
         )
 
         last_inserted = await cursor.fetchone()
         await connection.commit()
 
-    return UserShow(**user_data.model_dump(), id=last_inserted["id"])
+    return UserShow(username=user_data.username)
 
 
 @app.post("/api/login", response_model=Token, tags=["auth"])
@@ -235,7 +240,7 @@ async def login(
 ) -> Token:
     async with connection.cursor() as cursor:
         await cursor.execute(
-            "SELECT * FROM users WHERE login = ?;", (form_data.username,)
+            "SELECT * FROM users WHERE username = ?;", (form_data.username,)
         )
         db_user = await cursor.fetchone()
 
