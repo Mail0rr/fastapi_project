@@ -3,6 +3,8 @@ import uvicorn
 import datetime
 import secrets
 import jwt
+import hashlib
+import os
 
 from typing import Any
 from fastapi import FastAPI, Depends, HTTPException, Request, status, Form
@@ -77,6 +79,21 @@ def decode_jwt(token: str) -> dict:
         return {}
 
 
+def hash_password(password: str) -> str:
+    """Hash password using PBKDF2 with SHA256"""
+    salt = os.urandom(32)  # 32 bytes salt
+    pwdhash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+    return salt.hex() + pwdhash.hex()
+
+
+def verify_password(stored_password: str, provided_password: str) -> bool:
+    """Verify password against stored hash"""
+    salt = bytes.fromhex(stored_password[:64])  # First 32 bytes (64 hex chars) are salt
+    stored_hash = stored_password[64:]  # Rest is the hash
+    pwdhash = hashlib.pbkdf2_hmac('sha256', provided_password.encode('utf-8'), salt, 100000)
+    return pwdhash.hex() == stored_hash
+
+
 async def get_db():
     async with aiosqlite.connect(SQLITE_DB_NAME) as db:
         db.row_factory = aiosqlite.Row
@@ -137,7 +154,7 @@ async def login_form(
             await cursor.execute("SELECT * FROM users WHERE username = ?;", (username,))
             db_user = await cursor.fetchone()
 
-            if db_user is None or db_user["password"] != password:
+            if db_user is None or not verify_password(db_user["password"], password):
                 return templates.TemplateResponse(
                     "sign-in.html",
                     {"request": request, "error": "Неверный логин или пароль"}
@@ -149,7 +166,7 @@ async def login_form(
             key="access_token",
             value=token,
             httponly=True,
-            max_age=3600*24*31
+            max_age=3600 * 24 * 31
         )
         return response
 
@@ -191,9 +208,10 @@ async def sign_up_form(
                     {"request": request, "error": "Пользователь с таким именем уже существует"}
                 )
 
+            hashed_password = hash_password(password)
             await cursor.execute(
                 "INSERT INTO users (username, email, password, nickname) VALUES (?, ?, ?, ?);",
-                (username, email, password, username)
+                (username, email, hashed_password, username)
             )
             await connection.commit()
 
@@ -222,9 +240,10 @@ async def user_registration(user_data: UserCreate, connection: aiosqlite.Connect
         if db_user is not None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "User exists.")
 
+        hashed_password = hash_password(user_data.password)
         await cursor.execute(
             "INSERT INTO users (username, email, password, nickname) VALUES (?, ?, ?, ?) RETURNING id;",
-            (user_data.username, user_data.email, user_data.password, user_data.username),
+            (user_data.username, user_data.email, hashed_password, user_data.username),
         )
 
         last_inserted = await cursor.fetchone()
@@ -247,9 +266,7 @@ async def login(
         if db_user is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "User does not exist.")
 
-    user = UserCreate(**db_user)
-
-    if user.password != form_data.password:
+    if not verify_password(db_user["password"], form_data.password):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Incorrect password.")
 
     token = create_jwt({"sub": form_data.username})
@@ -257,6 +274,28 @@ async def login(
         access_token=token,
         token_type="bearer"
     )
+
+
+@app.get("/api/search-user/{username}")
+async def search_user(username: str, connection: aiosqlite.Connection = Depends(get_db)):
+    async with connection.cursor() as cursor:
+        await cursor.execute(
+            "SELECT username, nickname, pfp FROM users WHERE username = ?;",
+            (username,)
+        )
+        user = await cursor.fetchone()
+
+        if user is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Человека с таким username'ом не найдено"
+            )
+
+        return {
+            "username": user["username"],
+            "nickname": user["nickname"] or user["username"],
+            "pfp": user["pfp"]
+        }
 
 
 if __name__ == '__main__':
