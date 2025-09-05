@@ -224,6 +224,90 @@ async def sign_up_form(
         )
 
 
+@app.get("/settings", response_class=HTMLResponse)
+async def settings(request: Request):
+    username = await get_current_user(request)
+    if not username:
+        return RedirectResponse(url="/sign-in", status_code=303)
+
+    return templates.TemplateResponse("settings.html", {
+        "request": request,
+        "username": username
+    })
+
+
+@app.post("/api/update-nickname")
+async def update_nickname(
+        request: Request,
+        nickname: str = Form(...),
+        connection: aiosqlite.Connection = Depends(get_db)
+):
+    username = await get_current_user(request)
+    if not username:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(
+                "UPDATE users SET nickname = ? WHERE username = ?;",
+                (nickname, username)
+            )
+            await connection.commit()
+
+        return {"success": True, "message": "Nickname updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to update nickname")
+
+
+@app.post("/api/update-avatar")
+async def update_avatar(
+        request: Request,
+        avatar_url: str = Form(...),
+        connection: aiosqlite.Connection = Depends(get_db)
+):
+    username = await get_current_user(request)
+    if not username:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(
+                "UPDATE users SET pfp = ? WHERE username = ?;",
+                (avatar_url, username)
+            )
+            await connection.commit()
+
+        return {"success": True, "message": "Avatar updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to update avatar")
+
+
+@app.get("/api/user-profile")
+async def get_user_profile(
+        request: Request,
+        connection: aiosqlite.Connection = Depends(get_db)
+):
+    username = await get_current_user(request)
+    if not username:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    async with connection.cursor() as cursor:
+        await cursor.execute(
+            "SELECT username, nickname, pfp FROM users WHERE username = ?;",
+            (username,)
+        )
+        user = await cursor.fetchone()
+
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return {
+            "username": user["username"],
+            "nickname": user["nickname"] or user["username"],
+            "pfp": user["pfp"]
+        }
+
+
 @app.post(
     "/api/register",
     status_code=status.HTTP_200_OK,

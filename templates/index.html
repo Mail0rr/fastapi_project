@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Messenger{% endblock %}
+{% block title %}Messenger - Fastcord{% endblock %}
 
 {% block content %}
 
@@ -37,26 +37,27 @@
             </div>
         </div>
 
+        <!-- Updated user profile section to show actual avatar and nickname -->
         <div class="p-3 border-t border-gray-600/50 bg-discord-darkest/30">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="relative">
-                        <div class="w-10 h-10 bg-gradient-to-br from-discord-blue to-purple-600 rounded-full flex items-center justify-center">
+                        <div id="currentUserAvatar" class="w-10 h-10 bg-gradient-to-br from-discord-blue to-purple-600 rounded-full flex items-center justify-center">
                             <span class="text-white font-semibold text-sm">{{ username[0].upper() if username else 'U' }}</span>
                         </div>
                         <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-discord-green border-2 border-discord-darkest rounded-full"></div>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <span class="text-white font-medium text-sm block">{{ username or 'Гость' }}</span>
+                        <span id="currentUserNickname" class="text-white font-medium text-sm block">{{ username or 'Гость' }}</span>
                         <p class="text-xs text-gray-400">@{{ username or 'guest' }}</p>
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <button class="p-2 hover:bg-discord-dark rounded-md transition-colors">
+                    <a href="/settings" class="p-2 hover:bg-discord-dark rounded-md transition-colors">
                         <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
                         </svg>
-                    </button>
+                    </a>
                     <a href="/logout" class="p-2 hover:bg-discord-dark rounded-md transition-colors">
                         <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
@@ -66,6 +67,7 @@
             </div>
         </div>
     </div>
+
 
     <div class="flex-1 flex flex-col bg-discord-dark">
 
@@ -148,6 +150,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let searchTimeout;
 
+    loadCurrentUserProfile();
+
+    async function loadCurrentUserProfile() {
+        try {
+            const response = await fetch('/api/user-profile');
+            if (response.ok) {
+                const user = await response.json();
+                updateCurrentUserDisplay(user);
+            }
+        } catch (error) {
+            console.error('Error loading user profile:', error);
+        }
+    }
+
+    function updateCurrentUserDisplay(user) {
+        const currentUserNickname = document.getElementById('currentUserNickname');
+        const currentUserAvatar = document.getElementById('currentUserAvatar');
+
+        if (currentUserNickname) {
+            currentUserNickname.textContent = user.nickname;
+        }
+
+        if (currentUserAvatar && user.pfp) {
+            currentUserAvatar.innerHTML = `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`;
+        }
+    }
+
     searchInput.addEventListener('input', function() {
         const query = this.value.trim();
 
@@ -200,16 +229,19 @@ document.addEventListener('DOMContentLoaded', function() {
         searchError.classList.add('hidden');
 
         const userInitial = user.nickname ? user.nickname[0].toUpperCase() : user.username[0].toUpperCase();
+        const avatarContent = user.pfp
+            ? `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`
+            : `<span class="text-white font-semibold text-sm">${userInitial}</span>`;
 
         searchResults.innerHTML = `
             <div class="px-2 mb-2">
                 <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Результаты поиска</h3>
             </div>
             <div class="flex items-center p-3 rounded-lg hover:bg-discord-dark/60 cursor-pointer transition-all duration-200 group user-result"
-                 data-username="${user.username}" data-nickname="${user.nickname}">
+                 data-username="${user.username}" data-nickname="${user.nickname}" data-pfp="${user.pfp || ''}">
                 <div class="relative">
                     <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
-                        <span class="text-white font-semibold text-sm">${userInitial}</span>
+                        ${avatarContent}
                     </div>
                     <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-discord-green border-2 border-discord-darker mr-3 rounded-full"></div>
                 </div>
@@ -236,8 +268,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update header with selected user info
         selectedUserName.textContent = user.nickname;
 
-        const userInitial = user.nickname ? user.nickname[0].toUpperCase() : user.username[0].toUpperCase();
-        selectedUserAvatar.innerHTML = `<span class="text-white font-semibold text-xs">${userInitial}</span>`;
+        if (user.pfp) {
+            selectedUserAvatar.innerHTML = `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`;
+        } else {
+            const userInitial = user.nickname ? user.nickname[0].toUpperCase() : user.username[0].toUpperCase();
+            selectedUserAvatar.innerHTML = `<span class="text-white font-semibold text-xs">${userInitial}</span>`;
+        }
 
         // Clear search
         searchInput.value = '';
