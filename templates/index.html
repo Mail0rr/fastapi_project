@@ -35,9 +35,13 @@
                     <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Результаты поиска</h3>
                 </div>
             </div>
+
+            <!-- Added connection status indicator -->
+            <div id="connectionStatus" class="hidden mx-2 mb-4 p-2 rounded-md text-sm">
+                <span id="connectionText">Подключение...</span>
+            </div>
         </div>
 
-        <!-- Updated user profile section to show actual avatar and nickname -->
         <div class="p-3 border-t border-gray-600/50 bg-discord-darkest/30">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -55,12 +59,12 @@
                 <div class="flex space-x-2">
                     <a href="/settings" class="p-2 hover:bg-discord-dark rounded-md transition-colors">
                         <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
                     <a href="/logout" class="p-2 hover:bg-discord-dark rounded-md transition-colors">
                         <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 01-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
                 </div>
@@ -68,20 +72,18 @@
         </div>
     </div>
 
-
     <div class="flex-1 flex flex-col bg-discord-dark">
-
         <div class="p-4 border-b border-gray-600/50 flex items-center justify-between bg-discord-dark shadow-sm">
             <div class="flex items-center space-x-3">
                 <div class="relative">
                     <div id="selectedUserAvatar" class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                        <span class="text-white font-semibold text-xs">pfp</span>
+                        <span class="text-white font-semibold text-xs">?</span>
                     </div>
                     <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-discord-green border-2 border-discord-dark rounded-full"></div>
                 </div>
                 <div>
-                    <h2 id="selectedUserName" class="font-semibold text-white">name</h2>
-                    <p class="text-xs text-discord-green">status</p>
+                    <h2 id="selectedUserName" class="font-semibold text-white">Выберите пользователя</h2>
+                    <p class="text-xs text-discord-green">для начала чата</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -97,24 +99,15 @@
                 </button>
                 <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
                     <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414 1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                     </svg>
                 </button>
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 space-y-4">
-            <div class="flex items-start space-x-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span class="text-white font-semibold text-sm">pfp</span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center space-x-2 mb-b">
-                        <span class="font-semibold text-white">name</span>
-                        <span class="text-xs text-gray-500">time</span>
-                    </div>
-                    <p class="text-gray-200">message</p>
-                </div>
+        <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <div class="text-center text-gray-400 py-8">
+                <p>Выберите пользователя для начала чата</p>
             </div>
         </div>
 
@@ -122,128 +115,298 @@
             <div class="flex items-center space-x-3">
                 <button class="p-2 hover:bg-discord-darker rounded-md transition-colors"></button>
                 <div class="flex-1 relative">
-                    <input type="text" placeholder="send message 'name'" class="w-full bg-discord-darker rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-discord-blue transition-all">
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Выберите пользователя для отправки сообщения"
+                        class="w-full bg-discord-darker rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-discord-blue transition-all"
+                        disabled
+                    >
                 </div>
-                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
-                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-                    </svg>
-                </button>
-                <button class="bg-discord-blue hover:bg-blue-600 rounded-lg px-4 py-2 font-medium transition-colors text-white">
+                <button id="sendButton" class="bg-discord-blue hover:bg-blue-600 rounded-lg px-4 py-2 font-medium transition-colors text-white" disabled>
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 012 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                     </svg>
                 </button>
             </div>
         </div>
-
     </div>
 </div>
 
+<!-- Completely rewritten JavaScript with simplified token handling and better WebSocket management -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('userSearch');
-    const searchResults = document.getElementById('searchResults');
-    const searchError = document.getElementById('searchError');
-    const selectedUserName = document.getElementById('selectedUserName');
-    const selectedUserAvatar = document.getElementById('selectedUserAvatar');
+class ChatApp {
+    constructor() {
+        this.currentChatUser = null;
+        this.websocket = null;
+        this.currentUsername = '{{ username }}';
+        this.searchTimeout = null;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
 
-    let searchTimeout;
+        this.initializeElements();
+        this.setupEventListeners();
+        this.loadUserProfile();
+        this.connectWebSocket();
+    }
 
-    loadCurrentUserProfile();
+    initializeElements() {
+        this.elements = {
+            searchInput: document.getElementById('userSearch'),
+            searchResults: document.getElementById('searchResults'),
+            searchError: document.getElementById('searchError'),
+            selectedUserName: document.getElementById('selectedUserName'),
+            selectedUserAvatar: document.getElementById('selectedUserAvatar'),
+            messagesContainer: document.getElementById('messagesContainer'),
+            messageInput: document.getElementById('messageInput'),
+            sendButton: document.getElementById('sendButton'),
+            connectionStatus: document.getElementById('connectionStatus'),
+            connectionText: document.getElementById('connectionText'),
+            currentUserNickname: document.getElementById('currentUserNickname'),
+            currentUserAvatar: document.getElementById('currentUserAvatar')
+        };
+    }
 
-    async function loadCurrentUserProfile() {
+    setupEventListeners() {
+        this.elements.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+        this.elements.searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.searchUser(e.target.value.trim());
+            }
+        });
+
+        this.elements.sendButton.addEventListener('click', () => this.sendMessage());
+        this.elements.messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.sendMessage();
+            }
+        });
+    }
+
+    getAuthToken() {
+        console.log('[v0] Все cookies:', document.cookie);
+
+        // Простой способ получения cookie
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            console.log('[v0] Проверяем cookie:', name, '=', value);
+            if (name === 'access_token') {
+                const token = decodeURIComponent(value);
+                console.log('[v0] Найден токен:', token ? 'Да' : 'Нет');
+                return token;
+            }
+        }
+
+        console.log('[v0] Токен не найден в cookies');
+        return null;
+    }
+
+    updateConnectionStatus(status, message = '') {
+        const statusEl = this.elements.connectionStatus;
+        const textEl = this.elements.connectionText;
+
+        statusEl.classList.remove('hidden');
+
+        switch (status) {
+            case 'connecting':
+                statusEl.className = 'mx-2 mb-4 p-2 rounded-md text-sm bg-yellow-500/10 border border-yellow-500/20 text-yellow-400';
+                textEl.textContent = 'Подключение...';
+                break;
+            case 'connected':
+                statusEl.className = 'mx-2 mb-4 p-2 rounded-md text-sm bg-green-500/10 border border-green-500/20 text-green-400';
+                textEl.textContent = 'Подключено';
+                setTimeout(() => statusEl.classList.add('hidden'), 2000);
+                break;
+            case 'error':
+                statusEl.className = 'mx-2 mb-4 p-2 rounded-md text-sm bg-red-500/10 border border-red-500/20 text-red-400';
+                textEl.textContent = message || 'Ошибка соединения';
+                break;
+            case 'disconnected':
+                statusEl.className = 'mx-2 mb-4 p-2 rounded-md text-sm bg-red-500/10 border border-red-500/20 text-red-400';
+                textEl.textContent = 'Соединение потеряно';
+                break;
+        }
+    }
+
+    connectWebSocket() {
+        const token = this.getAuthToken();
+
+        if (!token) {
+            console.log('[v0] Токен не найден, перенаправляем на вход');
+            this.updateConnectionStatus('error', 'Токен не найден. Войдите в аккаунт.');
+            // Попробуем перенаправить на страницу входа через 3 секунды
+            setTimeout(() => {
+                window.location.href = '/sign-in';
+            }, 3000);
+            return;
+        }
+
+        console.log('[v0] Токен найден, подключаемся к WebSocket');
+        this.updateConnectionStatus('connecting');
+
+        try {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/${encodeURIComponent(token)}`;
+            console.log('[v0] WebSocket URL:', wsUrl);
+
+            this.websocket = new WebSocket(wsUrl);
+
+            this.websocket.onopen = () => {
+                console.log('[v0] WebSocket подключен успешно');
+                this.updateConnectionStatus('connected');
+                this.reconnectAttempts = 0;
+            };
+
+            this.websocket.onmessage = (event) => {
+                console.log('[v0] Получено сообщение:', event.data);
+                try {
+                    const data = JSON.parse(event.data);
+                    this.handleMessage(data);
+                } catch (error) {
+                    console.error('[v0] Ошибка парсинга сообщения:', error);
+                }
+            };
+
+            this.websocket.onclose = (event) => {
+                console.log('[v0] WebSocket отключен:', event.code, event.reason);
+                this.updateConnectionStatus('disconnected');
+                this.attemptReconnect();
+            };
+
+            this.websocket.onerror = (error) => {
+                console.error('[v0] Ошибка WebSocket:', error);
+                this.updateConnectionStatus('error', 'Ошибка подключения');
+            };
+
+        } catch (error) {
+            console.error('[v0] Ошибка создания WebSocket:', error);
+            this.updateConnectionStatus('error', 'Не удалось создать соединение');
+        }
+    }
+
+    attemptReconnect() {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+            this.reconnectAttempts++;
+            const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 10000);
+
+            console.log(`[v0] Попытка переподключения ${this.reconnectAttempts}/${this.maxReconnectAttempts} через ${delay}ms`);
+
+            setTimeout(() => {
+                this.connectWebSocket();
+            }, delay);
+        } else {
+            console.log('[v0] Превышено максимальное количество попыток переподключения');
+            this.updateConnectionStatus('error', 'Не удалось подключиться. Обновите страницу.');
+        }
+    }
+
+    handleMessage(data) {
+        console.log('[v0] Обработка сообщения:', data);
+        switch (data.type) {
+            case 'message':
+                if (this.currentChatUser && data.from === this.currentChatUser.username) {
+                    this.displayMessage({
+                        sender_username: data.from,
+                        sender_nickname: data.from_nickname,
+                        sender_pfp: data.from_pfp,
+                        message: data.message,
+                        timestamp: data.timestamp
+                    }, false);
+                }
+                break;
+            case 'sent':
+                this.displayMessage({
+                    sender_username: this.currentUsername,
+                    sender_nickname: this.currentUsername,
+                    sender_pfp: null,
+                    message: data.message,
+                    timestamp: data.timestamp
+                }, true);
+                break;
+            case 'error':
+                console.log('[v0] Ошибка от сервера:', data.message);
+                this.showError(data.message);
+                break;
+        }
+    }
+
+    async loadUserProfile() {
         try {
             const response = await fetch('/api/user-profile');
             if (response.ok) {
                 const user = await response.json();
-                updateCurrentUserDisplay(user);
+                this.updateCurrentUserDisplay(user);
             }
         } catch (error) {
-            console.error('Error loading user profile:', error);
+            console.error('Ошибка загрузки профиля:', error);
         }
     }
 
-    function updateCurrentUserDisplay(user) {
-        const currentUserNickname = document.getElementById('currentUserNickname');
-        const currentUserAvatar = document.getElementById('currentUserAvatar');
-
-        if (currentUserNickname) {
-            currentUserNickname.textContent = user.nickname;
+    updateCurrentUserDisplay(user) {
+        if (this.elements.currentUserNickname) {
+            this.elements.currentUserNickname.textContent = user.nickname;
         }
 
-        if (currentUserAvatar && user.pfp) {
-            currentUserAvatar.innerHTML = `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`;
+        if (this.elements.currentUserAvatar && user.pfp) {
+            this.elements.currentUserAvatar.innerHTML =
+                `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`;
         }
     }
 
-    searchInput.addEventListener('input', function() {
-        const query = this.value.trim();
+    handleSearch(e) {
+        const query = e.target.value.trim();
 
-        // Clear previous timeout
-        clearTimeout(searchTimeout);
+        clearTimeout(this.searchTimeout);
+        this.elements.searchResults.classList.add('hidden');
+        this.elements.searchError.classList.add('hidden');
 
-        // Hide previous results and errors
-        searchResults.classList.add('hidden');
-        searchError.classList.add('hidden');
+        if (query.length === 0) return;
 
-        if (query.length === 0) {
-            return;
-        }
-
-        // Debounce search
-        searchTimeout = setTimeout(() => {
-            searchUser(query);
+        this.searchTimeout = setTimeout(() => {
+            this.searchUser(query);
         }, 500);
-    });
+    }
 
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const query = this.value.trim();
-            if (query.length > 0) {
-                clearTimeout(searchTimeout);
-                searchUser(query);
-            }
-        }
-    });
+    async searchUser(username) {
+        if (!username) return;
 
-    async function searchUser(username) {
         try {
             const response = await fetch(`/api/search-user/${encodeURIComponent(username)}`);
 
             if (response.ok) {
                 const user = await response.json();
-                displaySearchResult(user);
+                this.displaySearchResult(user);
             } else {
                 const error = await response.json();
-                showError(error.detail || 'Человека с таким username\'ом не найдено');
+                this.showError(error.detail || 'Пользователь не найден');
             }
         } catch (error) {
-            console.error('Search error:', error);
-            showError('Произошла ошибка при поиске');
+            console.error('Ошибка поиска:', error);
+            this.showError('Ошибка при поиске пользователя');
         }
     }
 
-    function displaySearchResult(user) {
-        searchError.classList.add('hidden');
+    displaySearchResult(user) {
+        this.elements.searchError.classList.add('hidden');
 
-        const userInitial = user.nickname ? user.nickname[0].toUpperCase() : user.username[0].toUpperCase();
+        const userInitial = (user.nickname || user.username)[0].toUpperCase();
         const avatarContent = user.pfp
             ? `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`
             : `<span class="text-white font-semibold text-sm">${userInitial}</span>`;
 
-        searchResults.innerHTML = `
+        this.elements.searchResults.innerHTML = `
             <div class="px-2 mb-2">
                 <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Результаты поиска</h3>
             </div>
-            <div class="flex items-center p-3 rounded-lg hover:bg-discord-dark/60 cursor-pointer transition-all duration-200 group user-result"
-                 data-username="${user.username}" data-nickname="${user.nickname}" data-pfp="${user.pfp || ''}">
+            <div class="flex items-center p-3 rounded-lg hover:bg-discord-dark/60 cursor-pointer transition-all duration-200 group user-result">
                 <div class="relative">
                     <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
                         ${avatarContent}
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-discord-green border-2 border-discord-darker mr-3 rounded-full"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-discord-green border-2 border-discord-darkest mr-3 rounded-full"></div>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex justify-between items-center">
@@ -255,39 +418,139 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        searchResults.classList.remove('hidden');
+        this.elements.searchResults.classList.remove('hidden');
 
-        // Add click handler for the result
-        const userResult = searchResults.querySelector('.user-result');
-        userResult.addEventListener('click', function() {
-            selectUser(user);
-        });
+        const userResult = this.elements.searchResults.querySelector('.user-result');
+        userResult.addEventListener('click', () => this.selectUser(user));
     }
 
-    function selectUser(user) {
-        // Update header with selected user info
-        selectedUserName.textContent = user.nickname;
+    async selectUser(user) {
+        this.currentChatUser = user;
 
+        this.elements.selectedUserName.textContent = user.nickname;
+
+        const userInitial = (user.nickname || user.username)[0].toUpperCase();
         if (user.pfp) {
-            selectedUserAvatar.innerHTML = `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`;
+            this.elements.selectedUserAvatar.innerHTML =
+                `<img src="${user.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`;
         } else {
-            const userInitial = user.nickname ? user.nickname[0].toUpperCase() : user.username[0].toUpperCase();
-            selectedUserAvatar.innerHTML = `<span class="text-white font-semibold text-xs">${userInitial}</span>`;
+            this.elements.selectedUserAvatar.innerHTML =
+                `<span class="text-white font-semibold text-xs">${userInitial}</span>`;
         }
 
-        // Clear search
-        searchInput.value = '';
-        searchResults.classList.add('hidden');
-        searchError.classList.add('hidden');
+        this.elements.messageInput.disabled = false;
+        this.elements.messageInput.placeholder = `Сообщение для ${user.nickname}`;
+        this.elements.sendButton.disabled = false;
 
-        console.log('[v0] Selected user:', user);
+        this.elements.searchInput.value = '';
+        this.elements.searchResults.classList.add('hidden');
+        this.elements.searchError.classList.add('hidden');
+
+        await this.loadChatHistory(user.username);
     }
 
-    function showError(message) {
-        searchResults.classList.add('hidden');
-        searchError.querySelector('p').textContent = message;
-        searchError.classList.remove('hidden');
+    async loadChatHistory(username) {
+        try {
+            const response = await fetch(`/api/messages/${username}`);
+            if (response.ok) {
+                const messages = await response.json();
+                this.displayChatHistory(messages);
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки истории:', error);
+        }
     }
+
+    displayChatHistory(messages) {
+        this.elements.messagesContainer.innerHTML = '';
+
+        if (messages.length === 0) {
+            this.elements.messagesContainer.innerHTML = `
+                <div class="text-center text-gray-400 py-8">
+                    <p>Начните разговор с ${this.currentChatUser.nickname}</p>
+                </div>
+            `;
+            return;
+        }
+
+        messages.forEach(message => {
+            const isOwnMessage = message.sender_username === this.currentUsername;
+            this.displayMessage(message, isOwnMessage);
+        });
+
+        this.elements.messagesContainer.scrollTop = this.elements.messagesContainer.scrollHeight;
+    }
+
+    displayMessage(message, isOwnMessage) {
+        const messageTime = new Date(message.timestamp).toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const avatarContent = message.sender_pfp
+            ? `<img src="${message.sender_pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`
+            : `<span class="text-white font-semibold text-sm">${message.sender_nickname[0].toUpperCase()}</span>`;
+
+        const messageElement = document.createElement('div');
+        messageElement.className = 'flex items-start space-x-3';
+        messageElement.innerHTML = `
+            <div class="w-10 h-10 bg-gradient-to-br ${isOwnMessage ? 'from-discord-blue to-purple-600' : 'from-green-500 to-emerald-600'} rounded-full flex items-center justify-center flex-shrink-0">
+                ${avatarContent}
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center space-x-2 mb-1">
+                    <span class="font-semibold text-white">${message.sender_nickname}</span>
+                    <span class="text-xs text-gray-500">${messageTime}</span>
+                </div>
+                <p class="text-gray-200">${message.message}</p>
+            </div>
+        `;
+
+        this.elements.messagesContainer.appendChild(messageElement);
+        this.elements.messagesContainer.scrollTop = this.elements.messagesContainer.scrollHeight;
+    }
+
+    sendMessage() {
+        if (!this.currentChatUser) {
+            this.showError('Выберите пользователя для отправки сообщения');
+            return;
+        }
+
+        if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
+            console.log('[v0] WebSocket не готов, состояние:', this.websocket?.readyState);
+            this.updateConnectionStatus('error', 'Соединение не активно');
+            this.connectWebSocket();
+            return;
+        }
+
+        const message = this.elements.messageInput.value.trim();
+        if (!message) return;
+
+        const messageData = {
+            to: this.currentChatUser.username,
+            message: message
+        };
+
+        try {
+            console.log('[v0] Отправляем сообщение:', messageData);
+            this.websocket.send(JSON.stringify(messageData));
+            this.elements.messageInput.value = '';
+        } catch (error) {
+            console.error('[v0] Ошибка отправки сообщения:', error);
+            this.updateConnectionStatus('error', 'Ошибка отправки сообщения');
+        }
+    }
+
+    showError(message) {
+        this.elements.searchResults.classList.add('hidden');
+        this.elements.searchError.querySelector('p').textContent = message;
+        this.elements.searchError.classList.remove('hidden');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[v0] Инициализация чата');
+    new ChatApp();
 });
 </script>
 

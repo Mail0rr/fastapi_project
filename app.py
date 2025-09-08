@@ -5,9 +5,10 @@ import secrets
 import jwt
 import hashlib
 import os
+import json
 
 from typing import Any
-from fastapi import FastAPI, Depends, HTTPException, Request, status, Form
+from fastapi import FastAPI, Depends, HTTPException, Request, status, Form, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -25,6 +26,45 @@ SQLITE_DB_NAME = "mydb.db"
 templates = Jinja2Templates(directory="templates")
 
 
+class WebsocketConnectionManager:
+    """Менеджер роботи з WebSocket."""
+
+    def __init__(self) -> None:
+        """Ініціалізація структури для зберігання з'єднань."""
+        self.active_connections: dict[str, WebSocket] = {}
+
+    async def connect(self, websocket: WebSocket, username: str) -> None:
+        """Приєднання до websocket та оповіщення всіх про це."""
+        await websocket.accept()
+        await self.broadcast(f"{username} is online.", exclude={username})
+        self.active_connections[username] = websocket
+
+    def disconnect(self, username: str) -> None:
+        """Від'єднання від websocket та видалення із контейнера об'єкта з'єднання."""
+        self.active_connections.pop(username, None)
+
+    async def send_personal_message(self, message: str, username: str) -> None:
+        """Відправлення приватного повідомлення на одне відкрите з'єднання."""
+        websocket = self.active_connections.get(username)
+        if websocket:
+            await websocket.send_text(message)
+
+    async def broadcast(self, message: str, exclude: set[str] | None = None) -> None:
+        """
+        Відправлення загальнодоступного повідомлення на всі відкриті з'єднання,
+        окрім з'єднань з `exclude`.
+        """
+        if exclude is None:
+            exclude = set()
+
+        for username, connection in self.active_connections.items():
+            if username not in exclude:
+                await connection.send_text(message)
+
+
+manager = WebsocketConnectionManager()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with aiosqlite.connect(SQLITE_DB_NAME) as db:
@@ -35,6 +75,16 @@ async def lifespan(app: FastAPI):
                 password TEXT NOT NULL,
                 nickname TEXT NOT NULL,
                 pfp TEXT
+            );
+        """)
+        await db.execute("""CREATE TABLE IF NOT EXISTS messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sender_username TEXT NOT NULL,
+                receiver_username TEXT NOT NULL,
+                message TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (sender_username) REFERENCES users (username),
+                FOREIGN KEY (receiver_username) REFERENCES users (username)
             );
         """)
         await db.commit()
@@ -110,6 +160,15 @@ async def get_current_user(request: Request):
     return username
 
 
+async def get_current_user_ws(token: str):
+    if not token:
+        return None
+
+    payload = decode_jwt(token)
+    username = payload.get("sub")
+    return username
+
+
 class UserCreate(BaseModel):
     username: str
     email: str
@@ -165,8 +224,9 @@ async def login_form(
         response.set_cookie(
             key="access_token",
             value=token,
-            httponly=True,
-            max_age=3600 * 24 * 31
+            max_age=3600 * 24 * 31,
+            secure=False,  # Set to True in production with HTTPS
+            samesite="lax"
         )
         return response
 
@@ -306,6 +366,108 @@ async def get_user_profile(
             "nickname": user["nickname"] or user["username"],
             "pfp": user["pfp"]
         }
+
+
+@app.get("/api/messages/{other_username}")
+async def get_messages(
+        other_username: str,
+        request: Request,
+        connection: aiosqlite.Connection = Depends(get_db)
+):
+    username = await get_current_user(request)
+    if not username:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    async with connection.cursor() as cursor:
+        await cursor.execute("""
+            SELECT m.*, u1.nickname as sender_nickname, u1.pfp as sender_pfp,
+                   u2.nickname as receiver_nickname, u2.pfp as receiver_pfp
+            FROM messages m
+            JOIN users u1 ON m.sender_username = u1.username
+            JOIN users u2 ON m.receiver_username = u2.username
+            WHERE (m.sender_username = ? AND m.receiver_username = ?) 
+               OR (m.sender_username = ? AND m.receiver_username = ?)
+            ORDER BY m.timestamp ASC
+            LIMIT 50
+        """, (username, other_username, other_username, username))
+
+        messages = await cursor.fetchall()
+
+        return [{
+            "id": msg["id"],
+            "sender_username": msg["sender_username"],
+            "sender_nickname": msg["sender_nickname"] or msg["sender_username"],
+            "sender_pfp": msg["sender_pfp"],
+            "receiver_username": msg["receiver_username"],
+            "receiver_nickname": msg["receiver_nickname"] or msg["receiver_username"],
+            "receiver_pfp": msg["receiver_pfp"],
+            "message": msg["message"],
+            "timestamp": msg["timestamp"]
+        } for msg in messages]
+
+
+@app.websocket("/ws/{token}")
+async def websocket_endpoint(websocket: WebSocket, token: str):
+    username = await get_current_user_ws(token)
+    if not username:
+        await websocket.close(code=1008)
+        return
+
+    await manager.connect(websocket, username)
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            message_data = json.loads(data)
+
+            # Save message to database
+            async with aiosqlite.connect(SQLITE_DB_NAME) as db:
+                db.row_factory = aiosqlite.Row
+                async with db.cursor() as cursor:
+                    await cursor.execute(
+                        "INSERT INTO messages (sender_username, receiver_username, message) VALUES (?, ?, ?)",
+                        (username, message_data["to"], message_data["message"])
+                    )
+                    await db.commit()
+
+                    # Get sender info for the message
+                    await cursor.execute(
+                        "SELECT nickname, pfp FROM users WHERE username = ?",
+                        (username,)
+                    )
+                    sender_info = await cursor.fetchone()
+
+            # Send message to recipient if online
+            if message_data["to"] in manager.active_connections:
+                formatted_message = json.dumps({
+                    "type": "message",
+                    "from": username,
+                    "from_nickname": sender_info["nickname"] or username,
+                    "from_pfp": sender_info["pfp"],
+                    "message": message_data["message"],
+                    "timestamp": datetime.datetime.now().isoformat()
+                })
+                await manager.send_personal_message(formatted_message, message_data["to"])
+
+                # Send confirmation to sender
+                confirmation = json.dumps({
+                    "type": "sent",
+                    "to": message_data["to"],
+                    "message": message_data["message"],
+                    "timestamp": datetime.datetime.now().isoformat()
+                })
+                await manager.send_personal_message(confirmation, username)
+            else:
+                # User is offline
+                offline_message = json.dumps({
+                    "type": "error",
+                    "message": f"User {message_data['to']} is not online."
+                })
+                await manager.send_personal_message(offline_message, username)
+
+    except WebSocketDisconnect:
+        manager.disconnect(username)
+        await manager.broadcast(f"{username} left the chat.", exclude={username})
 
 
 @app.post(
