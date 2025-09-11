@@ -36,6 +36,16 @@
                 </div>
             </div>
 
+            <!-- Added saved chats section -->
+            <div id="savedChats" class="mb-4">
+                <div class="px-2 mb-2">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Сохраненные чаты</h3>
+                </div>
+                <div id="chatsList" class="space-y-1">
+                    <!-- Chats will be loaded here -->
+                </div>
+            </div>
+
             <!-- Added connection status indicator -->
             <div id="connectionStatus" class="hidden mx-2 mb-4 p-2 rounded-md text-sm">
                 <span id="connectionText">Подключение...</span>
@@ -56,14 +66,15 @@
                         <p class="text-xs text-gray-400">@{{ username or 'guest' }}</p>
                     </div>
                 </div>
+                <!-- Fixed gear icon sizing and positioning -->
                 <div class="flex space-x-2">
-                    <a href="/settings" class="p-2 hover:bg-discord-dark rounded-md transition-colors">
-                        <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <a href="/settings" class="p-2 hover:bg-discord-dark rounded-md transition-colors flex items-center justify-center">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
-                    <a href="/logout" class="p-2 hover:bg-discord-dark rounded-md transition-colors">
-                        <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <a href="/logout" class="p-2 hover:bg-discord-dark rounded-md transition-colors flex items-center justify-center">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 01-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
@@ -85,23 +96,6 @@
                     <h2 id="selectedUserName" class="font-semibold text-white">Выберите пользователя</h2>
                     <p class="text-xs text-discord-green">для начала чата</p>
                 </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
-                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                    </svg>
-                </button>
-                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
-                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M1 8.25a1.25 1.25 0 112.5 0v7.5a1.25 1.25 0 11-2.5 0v-7.5zM11 3a3 3 0 00-3 3v4a3 3 0 006 0V6a3 3 0 00-3-3zM15.25 6.75a1.25 1.25 0 112.5 0 7 7 0 01-14 0 1.25 1.25 0 112.5 0 4.5 4.5 0 009 0z"></path>
-                    </svg>
-                </button>
-                <button class="p-2 hover:bg-discord-darker rounded-md transition-colors">
-                    <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414 1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                </button>
             </div>
         </div>
 
@@ -125,7 +119,7 @@
                 </div>
                 <button id="sendButton" class="bg-discord-blue hover:bg-blue-600 rounded-lg px-4 py-2 font-medium transition-colors text-white" disabled>
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 012 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                     </svg>
                 </button>
             </div>
@@ -133,7 +127,7 @@
     </div>
 </div>
 
-<!-- Completely rewritten JavaScript with simplified token handling and better WebSocket management -->
+<!-- Enhanced JavaScript with chat saving functionality -->
 <script>
 class ChatApp {
     constructor() {
@@ -143,10 +137,12 @@ class ChatApp {
         this.searchTimeout = null;
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
+        this.savedChats = new Map(); // Store saved chats
 
         this.initializeElements();
         this.setupEventListeners();
         this.loadUserProfile();
+        this.loadSavedChats();
         this.connectWebSocket();
     }
 
@@ -163,7 +159,8 @@ class ChatApp {
             connectionStatus: document.getElementById('connectionStatus'),
             connectionText: document.getElementById('connectionText'),
             currentUserNickname: document.getElementById('currentUserNickname'),
-            currentUserAvatar: document.getElementById('currentUserAvatar')
+            currentUserAvatar: document.getElementById('currentUserAvatar'),
+            chatsList: document.getElementById('chatsList')
         };
     }
 
@@ -183,6 +180,88 @@ class ChatApp {
                 this.sendMessage();
             }
         });
+    }
+
+
+    async loadSavedChats() {
+        try {
+            const response = await fetch('/api/saved-chats');
+            if (response.ok) {
+                const chats = await response.json();
+                this.displaySavedChats(chats);
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки сохраненных чатов:', error);
+        }
+    }
+
+    displaySavedChats(chats) {
+        this.elements.chatsList.innerHTML = '';
+
+        if (chats.length === 0) {
+            this.elements.chatsList.innerHTML = `
+                <div class="px-2 py-4 text-center text-gray-500 text-sm">
+                    Нет сохраненных чатов
+                </div>
+            `;
+            return;
+        }
+
+        chats.forEach(chat => {
+            const userInitial = (chat.nickname || chat.username)[0].toUpperCase();
+            const avatarContent = chat.pfp
+                ? `<img src="${chat.pfp}" alt="Avatar" class="w-full h-full rounded-full object-cover">`
+                : `<span class="text-white font-semibold text-sm">${userInitial}</span>`;
+
+            const lastMessageTime = chat.last_message_time
+                ? new Date(chat.last_message_time).toLocaleDateString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit'
+                })
+                : '';
+
+            const chatElement = document.createElement('div');
+            chatElement.className = 'flex items-center p-3 rounded-lg hover:bg-discord-dark/60 cursor-pointer transition-all duration-200 group chat-item';
+            chatElement.innerHTML = `
+                <div class="relative">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
+                        ${avatarContent}
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-discord-green border-2 border-discord-darkest mr-3 rounded-full"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-200 group-hover:text-white transition-colors">${chat.nickname}</span>
+                        <span class="text-xs text-gray-500">${lastMessageTime}</span>
+                    </div>
+                    <p class="text-sm text-gray-400 truncate group-hover:text-gray-300 transition-colors">
+                        ${chat.last_message || 'Нет сообщений'}
+                    </p>
+                </div>
+            `;
+
+            chatElement.addEventListener('click', () => this.selectUser(chat));
+            this.elements.chatsList.appendChild(chatElement);
+        });
+    }
+
+    async saveChat(user) {
+        try {
+            await fetch('/api/save-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: user.username,
+                    nickname: user.nickname,
+                    pfp: user.pfp
+                })
+            });
+            this.loadSavedChats(); // Refresh the list
+        } catch (error) {
+            console.error('Ошибка сохранения чата:', error);
+        }
     }
 
     getAuthToken() {
@@ -237,7 +316,6 @@ class ChatApp {
         if (!token) {
             console.log('[v0] Токен не найден, перенаправляем на вход');
             this.updateConnectionStatus('error', 'Токен не найден. Войдите в аккаунт.');
-            // Попробуем перенаправить на страницу входа через 3 секунды
             setTimeout(() => {
                 window.location.href = '/sign-in';
             }, 3000);
@@ -315,6 +393,8 @@ class ChatApp {
                         message: data.message,
                         timestamp: data.timestamp
                     }, false);
+                    // Update saved chats when receiving a message
+                    this.loadSavedChats();
                 }
                 break;
             case 'sent':
@@ -325,6 +405,8 @@ class ChatApp {
                     message: data.message,
                     timestamp: data.timestamp
                 }, true);
+                // Update saved chats when sending a message
+                this.loadSavedChats();
                 break;
             case 'error':
                 console.log('[v0] Ошибка от сервера:', data.message);
@@ -446,6 +528,7 @@ class ChatApp {
         this.elements.searchResults.classList.add('hidden');
         this.elements.searchError.classList.add('hidden');
 
+        // Save chat when user is selected
         await this.loadChatHistory(user.username);
     }
 
@@ -535,6 +618,8 @@ class ChatApp {
             console.log('[v0] Отправляем сообщение:', messageData);
             this.websocket.send(JSON.stringify(messageData));
             this.elements.messageInput.value = '';
+            // Save chat when sending a message
+            this.saveChat(this.currentChatUser);
         } catch (error) {
             console.error('[v0] Ошибка отправки сообщения:', error);
             this.updateConnectionStatus('error', 'Ошибка отправки сообщения');

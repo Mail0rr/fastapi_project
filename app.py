@@ -87,6 +87,20 @@ async def lifespan(app: FastAPI):
                 FOREIGN KEY (receiver_username) REFERENCES users (username)
             );
         """)
+        await db.execute("""CREATE TABLE IF NOT EXISTS saved_chats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_username TEXT NOT NULL,
+                chat_username TEXT NOT NULL,
+                chat_nickname TEXT NOT NULL,
+                chat_pfp TEXT,
+                last_message_time DATETIME,
+                last_message TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_username) REFERENCES users (username),
+                FOREIGN KEY (chat_username) REFERENCES users (username),
+                UNIQUE(user_username, chat_username)
+            );
+        """)
         await db.commit()
     yield
 
@@ -182,6 +196,12 @@ class UserShow(BaseModel):
 class Token(BaseModel):
     token_type: str
     access_token: str
+
+
+class SaveChatRequest(BaseModel):
+    username: str
+    nickname: str
+    pfp: str = None
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -368,6 +388,97 @@ async def get_user_profile(
         }
 
 
+@app.get("/api/saved-chats")
+async def get_saved_chats(
+        request: Request,
+        connection: aiosqlite.Connection = Depends(get_db)
+):
+    username = await get_current_user(request)
+    if not username:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    async with connection.cursor() as cursor:
+        await cursor.execute("""
+            SELECT sc.*, u.nickname as current_nickname, u.pfp as current_pfp
+            FROM saved_chats sc
+            LEFT JOIN users u ON sc.chat_username = u.username
+            WHERE sc.user_username = ?
+            ORDER BY sc.last_message_time DESC NULLS LAST, sc.created_at DESC
+        """, (username,))
+
+        chats = await cursor.fetchall()
+
+        return [{
+            "username": chat["chat_username"],
+            "nickname": chat["current_nickname"] or chat["chat_nickname"],
+            "pfp": chat["current_pfp"],
+            "last_message": chat["last_message"],
+            "last_message_time": chat["last_message_time"]
+        } for chat in chats]
+
+
+@app.post("/api/save-chat")
+async def save_chat(
+        request: Request,
+        chat_data: SaveChatRequest,
+        connection: aiosqlite.Connection = Depends(get_db)
+):
+    username = await get_current_user(request)
+    if not username:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        async with connection.cursor() as cursor:
+            # Check if chat already exists
+            await cursor.execute(
+                "SELECT id FROM saved_chats WHERE user_username = ? AND chat_username = ?",
+                (username, chat_data.username)
+            )
+            existing_chat = await cursor.fetchone()
+
+            if existing_chat:
+                # Update existing chat
+                await cursor.execute("""
+                    UPDATE saved_chats 
+                    SET chat_nickname = ?, chat_pfp = ?
+                    WHERE user_username = ? AND chat_username = ?
+                """, (chat_data.nickname, chat_data.pfp, username, chat_data.username))
+            else:
+                # Insert new chat
+                await cursor.execute("""
+                    INSERT INTO saved_chats (user_username, chat_username, chat_nickname, chat_pfp)
+                    VALUES (?, ?, ?, ?)
+                """, (username, chat_data.username, chat_data.nickname, chat_data.pfp))
+
+            await connection.commit()
+
+        return {"success": True, "message": "Chat saved successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to save chat")
+
+
+async def update_chat_last_message(sender_username: str, receiver_username: str, message: str, connection):
+    """Update last message for both users' saved chats"""
+    timestamp = datetime.datetime.now().isoformat()
+
+    async with connection.cursor() as cursor:
+        # Update for sender
+        await cursor.execute("""
+            UPDATE saved_chats 
+            SET last_message = ?, last_message_time = ?
+            WHERE user_username = ? AND chat_username = ?
+        """, (message, timestamp, sender_username, receiver_username))
+
+        # Update for receiver
+        await cursor.execute("""
+            UPDATE saved_chats 
+            SET last_message = ?, last_message_time = ?
+            WHERE user_username = ? AND chat_username = ?
+        """, (message, timestamp, receiver_username, sender_username))
+
+        await connection.commit()
+
+
 @app.get("/api/messages/{other_username}")
 async def get_messages(
         other_username: str,
@@ -437,6 +548,15 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
                     )
                     sender_info = await cursor.fetchone()
 
+                    await cursor.execute(
+                        "SELECT nickname, pfp FROM users WHERE username = ?",
+                        (message_data["to"],)
+                    )
+                    receiver_info = await cursor.fetchone()
+
+                await auto_save_chat_for_both_users(username, message_data["to"], sender_info, receiver_info, db)
+                await update_chat_last_message(username, message_data["to"], message_data["message"], db)
+
             # Send message to recipient if online
             if message_data["to"] in manager.active_connections:
                 formatted_message = json.dumps({
@@ -468,6 +588,40 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
     except WebSocketDisconnect:
         manager.disconnect(username)
         await manager.broadcast(f"{username} left the chat.", exclude={username})
+
+
+async def auto_save_chat_for_both_users(sender_username: str, receiver_username: str, sender_info, receiver_info,
+                                        connection):
+    """Auto-save chat for both sender and receiver when they exchange messages"""
+    async with connection.cursor() as cursor:
+        # Save chat for sender (receiver appears in sender's chat list)
+        await cursor.execute(
+            "SELECT id FROM saved_chats WHERE user_username = ? AND chat_username = ?",
+            (sender_username, receiver_username)
+        )
+        existing_sender_chat = await cursor.fetchone()
+
+        if not existing_sender_chat:
+            await cursor.execute("""
+                INSERT INTO saved_chats (user_username, chat_username, chat_nickname, chat_pfp)
+                VALUES (?, ?, ?, ?)
+            """, (sender_username, receiver_username, receiver_info["nickname"] or receiver_username,
+                  receiver_info["pfp"]))
+
+        # Save chat for receiver (sender appears in receiver's chat list)
+        await cursor.execute(
+            "SELECT id FROM saved_chats WHERE user_username = ? AND chat_username = ?",
+            (receiver_username, sender_username)
+        )
+        existing_receiver_chat = await cursor.fetchone()
+
+        if not existing_receiver_chat:
+            await cursor.execute("""
+                INSERT INTO saved_chats (user_username, chat_username, chat_nickname, chat_pfp)
+                VALUES (?, ?, ?, ?)
+            """, (receiver_username, sender_username, sender_info["nickname"] or sender_username, sender_info["pfp"]))
+
+        await connection.commit()
 
 
 @app.post(
