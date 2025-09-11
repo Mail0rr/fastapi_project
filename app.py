@@ -697,6 +697,5 @@ async def search_user(username: str, connection: aiosqlite.Connection = Depends(
             "pfp": user["pfp"]
         }
 
-
 if __name__ == '__main__':
     uvicorn.run("app:app", reload=True, port=8000)
