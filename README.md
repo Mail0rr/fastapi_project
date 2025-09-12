@@ -64,7 +64,7 @@ pip install fastapi "uvicorn[standard]" aiosqlite jinja2 python-multipart pydant
 
 Optionally, save them:
 ```powershell
-pip freeze > requirements.txt
+pip install requirements.txt
 ```
 
 ### 5) Configure secrets (optional but recommended)
